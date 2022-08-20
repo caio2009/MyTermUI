@@ -6,8 +6,8 @@ public class Button : Component, ISwitchableComponent
 {
     public string Text { get; set; } = "";
     public Action<Page>? OnClickCb { get; set; }
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 
     public Button() : base()
     {

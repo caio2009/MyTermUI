@@ -6,8 +6,8 @@ namespace MyUILib;
 public class Menu : Component, IContainer, ISwitchableComponent
 {
     public List<Component> Children { get; set; } = new List<Component>();
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 
     public Menu() : base()
     {

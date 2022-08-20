@@ -5,8 +5,8 @@ namespace MyUILib.Components;
 public class TextInput : Component, ISwitchableComponent
 {
     public string Value { get; set; } = "";
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 
     public TextInput() : base()
     {

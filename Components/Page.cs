@@ -5,37 +5,10 @@ namespace MyUILib.Components;
 public class Page : IContainer
 {
     public List<Component> Children { get; set; } = new List<Component>();
-    public List<ISwitchableComponent> SwitchableComponents { get; set; } = new List<ISwitchableComponent>();
     public Component? ActiveComponent;
 
-    /* public List<ISwitchableComponent> SwitchableComponents */
-    /* { */
-    /*     get */
-    /*     { */
-    /*         var components = new List<ISwitchableComponent>(); */
-
-    /*         foreach (var child in this.Children) */
-    /*         { */
-    /*             if (child is ISwitchableComponent) */
-    /*             { */
-    /*                 if (child is IContainer) */
-    /*                 { */
-    /*                     var container = (IContainer)child; */
-    /*                     foreach (var _child in container.Children) */
-    /*                     { */
-    /*                         components.Add((ISwitchableComponent)_child); */
-    /*                     } */
-    /*                 } */
-    /*                 else */
-    /*                 { */
-    /*                     components.Add((ISwitchableComponent)child); */
-    /*                 } */
-    /*             } */
-    /*         } */
-
-    /*         return components; */
-    /*     } */
-    /* } */
+    // Component Navigation Linked List
+    public ISwitchableComponent? LastSwitchableComponent { get; set; } = null;
 
     // --------------------------------------------------------------------------------
 
@@ -52,7 +25,7 @@ public class Page : IContainer
     public void Clear()
     {
         this.Children.Clear();
-        this.SwitchableComponents.Clear();
+        this.LastSwitchableComponent = null;
         this.ActiveComponent = null;
         Console.SetCursorPosition(0, 0);
     }
@@ -76,26 +49,43 @@ public class Page : IContainer
 
     public Page Add(Component component)
     {
-        this.Children.Add(component);
-
         if (component is ISwitchableComponent) AddSwitchableComponent((ISwitchableComponent)component);
-
+        this.Children.Add(component);
         return this;
     }
 
-    public void AddSwitchableComponent(ISwitchableComponent component)
+    private void AddSwitchableComponent(ISwitchableComponent component)
     {
         if (component is IContainer)
         {
             var container = (IContainer)component;
+
             foreach (var child in container.Children)
             {
-                this.SwitchableComponents.Add((ISwitchableComponent)child);
+                AddToTheEndOfNavigationList((ISwitchableComponent)child);
             }
         }
         else
         {
-            this.SwitchableComponents.Add((ISwitchableComponent)component);
+            AddToTheEndOfNavigationList(component);
+        }
+    }
+
+    private void AddToTheEndOfNavigationList(ISwitchableComponent component)
+    {
+        if (this.LastSwitchableComponent is null)
+        {
+            this.LastSwitchableComponent = component;
+            component.Next = this.LastSwitchableComponent;
+            component.Previous = this.LastSwitchableComponent;
+        }
+        else
+        {
+            component.Next = this.LastSwitchableComponent.Next;
+            component.Previous = this.LastSwitchableComponent;
+            this.LastSwitchableComponent.Next.Previous = component;
+            this.LastSwitchableComponent.Next = component;
+            this.LastSwitchableComponent = component;
         }
     }
 
@@ -108,16 +98,7 @@ public class Page : IContainer
     {
         if (this.ActiveComponent is null) return;
 
-        var ActiveComponentIndex = this.SwitchableComponents.IndexOf((ISwitchableComponent)this.ActiveComponent);
-
-        if (ActiveComponentIndex + 1 > this.SwitchableComponents.Count - 1)
-        {
-            ActiveComponent = (Component)this.SwitchableComponents[0];
-        }
-        else
-        {
-            ActiveComponent = (Component)this.SwitchableComponents[ActiveComponentIndex + 1];
-        }
+        this.ActiveComponent = (Component)((ISwitchableComponent)this.ActiveComponent).Next;
 
         if (this.ActiveComponent is IIsSelectableComponent)
         {
@@ -129,16 +110,7 @@ public class Page : IContainer
     {
         if (this.ActiveComponent is null) return;
 
-        var ActiveComponentIndex = this.SwitchableComponents.IndexOf((ISwitchableComponent)this.ActiveComponent);
-
-        if (ActiveComponentIndex - 1 < 0)
-        {
-            ActiveComponent = (Component)this.SwitchableComponents[this.SwitchableComponents.Count - 1];
-        }
-        else
-        {
-            ActiveComponent = (Component)this.SwitchableComponents[ActiveComponentIndex - 1];
-        }
+        this.ActiveComponent = (Component)((ISwitchableComponent)this.ActiveComponent).Previous;
 
         if (this.ActiveComponent is IIsSelectableComponent)
         {
@@ -148,9 +120,9 @@ public class Page : IContainer
 
     public void SetDefaultActiveComponent()
     {
-        if (this.SwitchableComponents.Count > 0 & this.ActiveComponent is null)
+        if (this.ActiveComponent is null & this.LastSwitchableComponent.Next is not null)
         {
-            this.ActiveComponent = (Component)this.SwitchableComponents[0];
+            this.ActiveComponent = (Component)this.LastSwitchableComponent.Next;
 
             if (this.ActiveComponent is IIsSelectableComponent)
             {

@@ -8,8 +8,8 @@ public class TableRow : Component, ISwitchableComponent, IIsSelectableComponent
     public CellData[]? Value { get; set; }
     public bool IsSelected { get; set; }
     public Action<int>? OnClickCb { get; set; }
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 
     public TableRow() : base()
     {

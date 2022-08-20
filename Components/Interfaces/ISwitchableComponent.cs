@@ -2,6 +2,6 @@ namespace MyUILib.Components.Interfaces;
 
 public interface ISwitchableComponent
 {
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 }

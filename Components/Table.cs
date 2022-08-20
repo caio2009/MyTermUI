@@ -19,8 +19,8 @@ public class Table : Component, IContainer, ISwitchableComponent
     public List<Component> Children { get; set; } = new List<Component>();
     public CellData[]? Header { get; set; }
     public Action<int>? OnSelectedCb { get; set; }
-    public Component? Next { get; set; }
-    public Component? Previous { get; set; }
+    public ISwitchableComponent? Next { get; set; }
+    public ISwitchableComponent? Previous { get; set; }
 
     public Table() : base()
     {
