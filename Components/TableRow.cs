@@ -2,7 +2,7 @@ using MyUILib.Components.Interfaces;
 
 namespace MyUILib.Components;
 
-public class TableRow : Component, ISwitchableComponent, IIsSelectableComponent
+public class TableRow : Component, ISwitchableComponent, IIsSelectableComponent, IChildComponent
 {
     public int Index { get; set; }
     public CellData[]? Value { get; set; }
@@ -10,6 +10,7 @@ public class TableRow : Component, ISwitchableComponent, IIsSelectableComponent
     public Action<int>? OnClickCb { get; set; }
     public ISwitchableComponent? Next { get; set; }
     public ISwitchableComponent? Previous { get; set; }
+    public IContainer Parent { get; set; }
 
     public TableRow() : base()
     {

@@ -14,6 +14,9 @@ public class HomePage
 
         page.Add(UI.TextLabel("Home Page", true))
             .Add(UI.BR())
+            .Add(UI.TextLabel("Your name: ")).Add(UI.TextInput(""))
+            .Add(UI.BR())
+            .Add(UI.BR())
             .Add(UI.Menu(new string[] { "Item 1", "Item 2", "Item 3" }, cb: (int index) => { Application.CurrentRoute = "BarPage"; }))
             .Add(UI.BR())
             .Add(UI.Button("Next", cb: (Page page) => { Application.CurrentRoute = "FooPage"; }))

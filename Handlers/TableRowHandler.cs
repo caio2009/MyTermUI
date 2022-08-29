@@ -14,24 +14,30 @@ public class TableRowHandler
             return;
         }
 
-        if (
-            (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift) | 
-            keyInfo.Key == ConsoleKey.UpArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift)
         {
             tableRow.IsSelected = false;
             page.SwitchToPreviousComponent();
             return;
         }
 
-        if (
-            keyInfo.Key == ConsoleKey.Tab | 
-            keyInfo.Key == ConsoleKey.DownArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab)
         {
             tableRow.IsSelected = false;
             page.SwitchToNextComponent();
             return;
+        }
+
+        if (keyInfo.Key == ConsoleKey.UpArrow)
+        {
+            tableRow.IsSelected = false;
+            page.SwitchToPreviousComponent(keepInContainer: true);
+        }
+
+        if (keyInfo.Key == ConsoleKey.DownArrow)
+        {
+            tableRow.IsSelected = false;
+            page.SwitchToNextComponent(keepInContainer: true);
         }
     }
 }

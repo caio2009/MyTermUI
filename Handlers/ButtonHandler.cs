@@ -14,21 +14,13 @@ public class ButtonHandler
             return;
         }
 
-        if (
-            (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift) | 
-            keyInfo.Key == ConsoleKey.LeftArrow |
-            keyInfo.Key == ConsoleKey.UpArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift)
         {
             page.SwitchToPreviousComponent();
             return;
         }
 
-        if (
-            keyInfo.Key == ConsoleKey.Tab | 
-            keyInfo.Key == ConsoleKey.RightArrow |
-            keyInfo.Key == ConsoleKey.DownArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab)
         {
             page.SwitchToNextComponent();
             return;

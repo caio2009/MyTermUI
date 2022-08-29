@@ -3,9 +3,8 @@ using MyUILib.Components.Interfaces;
 
 namespace MyUILib;
 
-public class Menu : Component, IContainer, ISwitchableComponent
+public class Menu : BaseContainer, ISwitchableComponent
 {
-    public List<Component> Children { get; set; } = new List<Component>();
     public ISwitchableComponent? Next { get; set; }
     public ISwitchableComponent? Previous { get; set; }
 
@@ -18,11 +17,12 @@ public class Menu : Component, IContainer, ISwitchableComponent
         var index = 0;
         foreach (var menuItem in menuItems) 
         {
-            this.Children.Add(new MenuItem(
-                index, 
-                menuItem, 
-                (int index) => { if (onSelectedCb is not null) onSelectedCb(index); }
-            ));
+            var child = new MenuItem(this);
+            child.Index = index;
+            child.Text = menuItem;
+            child.OnClickCb = (int index) => { if (onSelectedCb is not null) { onSelectedCb(index); } };
+
+            AddMenuItem(child);
             index++;
         }
     }
@@ -32,6 +32,30 @@ public class Menu : Component, IContainer, ISwitchableComponent
         foreach(var child in this.Children)
         {
             child.Render();
+        }
+    }
+
+    private void AddMenuItem(MenuItem menuItem)
+    {
+        this.Children.Add(menuItem);
+        AddSwitchableComponent(menuItem);
+    }
+
+    private void AddSwitchableComponent(MenuItem menuItem)
+    {
+        if (this.LastSwitchableComponent is null)
+        {
+            this.LastSwitchableComponent = menuItem;
+            menuItem.Next = this.LastSwitchableComponent;
+            menuItem.Previous = this.LastSwitchableComponent;
+        }
+        else
+        {
+            menuItem.Next = this.LastSwitchableComponent.Next;
+            menuItem.Previous = this.LastSwitchableComponent;
+            this.LastSwitchableComponent.Next.Previous = menuItem;
+            this.LastSwitchableComponent.Next = menuItem;
+            this.LastSwitchableComponent = menuItem;
         }
     }
 }

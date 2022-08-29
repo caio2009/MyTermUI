@@ -3,21 +3,25 @@ using MyUILib.Components.Interfaces;
 
 namespace MyUILib;
 
-public class MenuItem : Component, ISwitchableComponent, IIsSelectableComponent
+public class MenuItem : Component, ISwitchableComponent, IIsSelectableComponent, IChildComponent
 {
     public string? Text { get; set; }
     public int Index { get; set; }
     public bool IsSelected { get; set; }
     public Action<int>? OnClickCb { get; set; }
+
+    public IContainer Parent { get; set; }
     public ISwitchableComponent? Next { get; set; }
     public ISwitchableComponent? Previous { get; set; }
 
-    public MenuItem() : base()
+    public MenuItem(IContainer parent) : base()
     {
+        this.Parent = parent;
     }
 
-    public MenuItem(int index, string text, Action<int> onClickCb) : base()
+    public MenuItem(IContainer parent, int index, string text, Action<int> onClickCb) : base()
     {
+        this.Parent = parent;
         this.Index = index;
         this.Text = text;
         this.OnClickCb = onClickCb;

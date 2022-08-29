@@ -14,23 +14,31 @@ public class MenuItemHandler
             return;
         }
 
-        if (
-            (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift) | 
-            keyInfo.Key == ConsoleKey.UpArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab & keyInfo.Modifiers == ConsoleModifiers.Shift)
         {
             menuItem.IsSelected = false;
             page.SwitchToPreviousComponent();
             return;
         }
 
-        if (
-            keyInfo.Key == ConsoleKey.Tab | 
-            keyInfo.Key == ConsoleKey.DownArrow
-        )
+        if (keyInfo.Key == ConsoleKey.Tab)
         {
             menuItem.IsSelected = false;
             page.SwitchToNextComponent();
+            return;
+        }
+
+        if (keyInfo.Key == ConsoleKey.UpArrow)
+        {
+            menuItem.IsSelected = false;
+            page.SwitchToPreviousComponent(keepInContainer: true);
+            return;
+        }
+
+        if (keyInfo.Key == ConsoleKey.DownArrow)
+        {
+            menuItem.IsSelected = false;
+            page.SwitchToNextComponent(keepInContainer: true);
             return;
         }
     }

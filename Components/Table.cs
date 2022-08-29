@@ -14,9 +14,8 @@ public struct CellData
     }
 }
 
-public class Table : Component, IContainer, ISwitchableComponent
+public class Table : BaseContainer, ISwitchableComponent
 {
-    public List<Component> Children { get; set; } = new List<Component>();
     public CellData[]? Header { get; set; }
     public Action<int>? OnSelectedCb { get; set; }
     public ISwitchableComponent? Next { get; set; }
@@ -34,11 +33,13 @@ public class Table : Component, IContainer, ISwitchableComponent
         var index = 0;
         foreach (var row in rows)
         {
-            this.Children.Add(new TableRow(
-                index, 
-                row, 
-                (int index) => { if (this.OnSelectedCb is not null) this.OnSelectedCb(index); }
-            ));
+            var child = new TableRow();
+            child.Parent = this;
+            child.Index = index;
+            child.Value = row;
+            child.OnClickCb = (int index) => { if (this.OnSelectedCb is not null) this.OnSelectedCb(index); };
+
+            AddTableRow(child);
             index++;
         }
     }
@@ -54,6 +55,30 @@ public class Table : Component, IContainer, ISwitchableComponent
         foreach (var child in this.Children)
         {
             child.Render();
+        }
+    }
+
+    private void AddTableRow(TableRow tableRow)
+    {
+        this.Children.Add(tableRow);
+        AddSwitchableComponent(tableRow);
+    }
+
+    private void AddSwitchableComponent(TableRow tableRow)
+    {
+        if (this.LastSwitchableComponent is null)
+        {
+            this.LastSwitchableComponent = tableRow;
+            tableRow.Next = this.LastSwitchableComponent;
+            tableRow.Previous = this.LastSwitchableComponent;
+        }
+        else
+        {
+            tableRow.Next = this.LastSwitchableComponent.Next;
+            tableRow.Previous = this.LastSwitchableComponent;
+            this.LastSwitchableComponent.Next.Previous = tableRow;
+            this.LastSwitchableComponent.Next = tableRow;
+            this.LastSwitchableComponent = tableRow;
         }
     }
 

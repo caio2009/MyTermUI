@@ -5,9 +5,9 @@ namespace MyUILib.Components;
 public class Page : IContainer
 {
     public List<Component> Children { get; set; } = new List<Component>();
-    public Component? ActiveComponent;
+    public Component? ActiveComponent { get; set; }
 
-    // Component Navigation Linked List
+    // Navigation Linked List
     public ISwitchableComponent? LastSwitchableComponent { get; set; } = null;
 
     // --------------------------------------------------------------------------------
@@ -49,29 +49,12 @@ public class Page : IContainer
 
     public Page Add(Component component)
     {
-        if (component is ISwitchableComponent) AddSwitchableComponent((ISwitchableComponent)component);
         this.Children.Add(component);
+        if (component is ISwitchableComponent) AddSwitchableComponent((ISwitchableComponent)component);
         return this;
     }
 
     private void AddSwitchableComponent(ISwitchableComponent component)
-    {
-        if (component is IContainer)
-        {
-            var container = (IContainer)component;
-
-            foreach (var child in container.Children)
-            {
-                AddToTheEndOfNavigationList((ISwitchableComponent)child);
-            }
-        }
-        else
-        {
-            AddToTheEndOfNavigationList(component);
-        }
-    }
-
-    private void AddToTheEndOfNavigationList(ISwitchableComponent component)
     {
         if (this.LastSwitchableComponent is null)
         {
@@ -94,27 +77,85 @@ public class Page : IContainer
         this.Children.Remove(this.Children.First(c => c.Id.Equals(componentId)));
     }
 
-    public void SwitchToNextComponent()
+    public void SwitchToNextComponent(BaseContainer? container = null, bool keepInContainer = false)
     {
         if (this.ActiveComponent is null) return;
 
-        this.ActiveComponent = (Component)((ISwitchableComponent)this.ActiveComponent).Next;
+        Component? nextComponent = null;
 
-        if (this.ActiveComponent is IIsSelectableComponent)
+        if (container is not null)
         {
-            ((IIsSelectableComponent)this.ActiveComponent).IsSelected = true;
+            container.SetNextComponent();
+            nextComponent = (Component)container.ActiveComponent;
+        }
+        else
+        {
+            var activeComponent = this.ActiveComponent;
+            if (activeComponent is IChildComponent & keepInContainer == false)
+            {
+                var parent = ((IChildComponent)activeComponent).Parent;
+                nextComponent = (Component)((ISwitchableComponent)parent).Next;
+                parent.ActiveComponent = null;
+            }
+            else
+            {
+                nextComponent = (Component)((ISwitchableComponent)activeComponent).Next;
+            }
+        }
+
+        if (nextComponent is BaseContainer)
+        {
+            SwitchToNextComponent((BaseContainer)nextComponent);
+        }
+        else
+        {
+            this.ActiveComponent = nextComponent;
+
+            if (this.ActiveComponent is IIsSelectableComponent)
+            {
+                ((IIsSelectableComponent)this.ActiveComponent).IsSelected = true;
+            }
         }
     }
 
-    public void SwitchToPreviousComponent()
+    public void SwitchToPreviousComponent(BaseContainer? container = null, bool keepInContainer = false)
     {
         if (this.ActiveComponent is null) return;
 
-        this.ActiveComponent = (Component)((ISwitchableComponent)this.ActiveComponent).Previous;
+        Component? previousComponent = null;
 
-        if (this.ActiveComponent is IIsSelectableComponent)
+        if (container is not null)
         {
-            ((IIsSelectableComponent)this.ActiveComponent).IsSelected = true;
+            container.SetPreviousComponent();
+            previousComponent = (Component)container.ActiveComponent;
+        }
+        else
+        {
+            var activeComponent = this.ActiveComponent;
+            if (activeComponent is IChildComponent & keepInContainer == false)
+            {
+                var parent = ((IChildComponent)activeComponent).Parent;
+                previousComponent = (Component)((ISwitchableComponent)parent).Previous;
+                parent.ActiveComponent = null;
+            }
+            else
+            {
+                previousComponent = (Component)((ISwitchableComponent)activeComponent).Previous;
+            }
+        }
+
+        if (previousComponent is BaseContainer)
+        {
+            SwitchToPreviousComponent((BaseContainer)previousComponent);
+        }
+        else
+        {
+            this.ActiveComponent = previousComponent;
+
+            if (this.ActiveComponent is IIsSelectableComponent)
+            {
+                ((IIsSelectableComponent)this.ActiveComponent).IsSelected = true;
+            }
         }
     }
 
